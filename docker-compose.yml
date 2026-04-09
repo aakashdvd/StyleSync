@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: stylesync-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: stylesync
+      POSTGRES_PASSWORD: stylesync
+      POSTGRES_DB: stylesync
+    ports:
+      - "5432:5432"
+    volumes:
+      - stylesync-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stylesync -d stylesync"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  stylesync-postgres-data:
