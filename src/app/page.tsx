@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowUpRight, Github } from "lucide-react";
 import { FeatureGrid } from "@/components/landing/feature-grid";
 import { HeroMark } from "@/components/landing/hero-mark";
+import { RecentSites } from "@/components/landing/recent-sites";
 import { SiteMark } from "@/components/landing/site-mark";
 import { UrlForm } from "@/components/landing/url-form";
 
@@ -85,6 +86,8 @@ export default function LandingPage() {
             <FeatureGrid />
           </div>
         </section>
+
+        <RecentSites />
 
         <footer className="mx-auto w-full max-w-6xl px-6 pb-12 pt-6 text-xs text-muted-foreground">
           <div className="flex flex-col items-start justify-between gap-2 border-t border-border pt-6 md:flex-row md:items-center">
