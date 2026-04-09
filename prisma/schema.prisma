@@ -1,0 +1,98 @@
+// StyleSync — data model
+// PostgreSQL is required so we can use JSONB for flexible token storage and
+// GIN indexes for fast lookups on JSON fields.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// The ingest record. Every time a URL is submitted we create one of these,
+/// regardless of whether scraping succeeds. Status tells us the outcome.
+model ScrapedSite {
+  id              String              @id @default(cuid())
+  url             String
+  normalizedUrl   String              // lowercased, trailing-slash-stripped — used for dedupe
+  title           String?
+  description     String?
+  faviconUrl      String?
+  screenshotUrl   String?             // optional: base64 thumbnail or remote screenshot
+  htmlSnapshot    String?             // raw HTML (optional, size-capped)
+  status          ExtractionStatus    @default(PENDING)
+  statusReason    String?             // e.g. "cors_blocked", "timeout", "invalid_html"
+  scrapedAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  tokens          DesignTokenSet?
+  versions        VersionHistory[]
+
+  @@index([normalizedUrl])
+  @@index([scrapedAt])
+}
+
+enum ExtractionStatus {
+  PENDING
+  SUCCESS
+  PARTIAL     // some fields extracted, some fell back
+  FALLBACK    // full heuristic fallback (no live data)
+  FAILED
+}
+
+/// Current (merged) token set for a site. Kept as JSONB for flexibility —
+/// the shape is validated at the application boundary via Zod.
+///
+/// Each token tree (colors/typography/spacing) contains BOTH the extracted
+/// baseline and any user overrides. The `locked` field is a flat array of
+/// dotted token paths ("colors.primary", "typography.headingFont") so we can
+/// do O(1) lookups during merge.
+model DesignTokenSet {
+  id              String         @id @default(cuid())
+  siteId          String         @unique
+  site            ScrapedSite    @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  colors          Json           // { extracted: {...}, overrides: {...} }
+  typography      Json           // { extracted: {...}, overrides: {...} }
+  spacing         Json           // { extracted: {...}, overrides: {...} }
+  meta            Json           // { palette: [...], accentSource: "image"|"css", confidence: 0..1 }
+  locked          String[]       @default([])
+
+  currentVersion  Int            @default(1)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([siteId])
+}
+
+/// Version history — append-only audit log.
+/// Each row is a snapshot of the full token set at a point in time. This lets
+/// the "time machine" UI rewind to any prior edit without reconstructing
+/// deltas.
+model VersionHistory {
+  id              String         @id @default(cuid())
+  siteId          String
+  site            ScrapedSite    @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  version         Int
+  label           String?        // e.g. "Initial scrape", "Locked primary color"
+  changeType      ChangeType     @default(EDIT)
+  changedPaths    String[]       @default([])   // which token paths changed
+  snapshot        Json           // full { colors, typography, spacing, locked } at this version
+
+  createdAt       DateTime       @default(now())
+
+  @@unique([siteId, version])
+  @@index([siteId, createdAt])
+}
+
+enum ChangeType {
+  SCRAPE
+  EDIT
+  LOCK
+  UNLOCK
+  RESET
+  REVERT
+}
