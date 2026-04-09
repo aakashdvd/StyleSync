@@ -29,11 +29,6 @@ const KNOWN_SCALE_RATIOS = [
   1.618, // Golden
 ];
 
-interface FamilyVote {
-  family: string;
-  weight: number;
-}
-
 export interface ExtractedTypography {
   typography: TypographyTokens;
   detectedFonts: string[];
