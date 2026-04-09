@@ -11,10 +11,8 @@ import type {
  * Resolve a single layered category ({ extracted, overrides }) into the final
  * values the UI will render. Overrides always win when present.
  */
-export function resolveLayer<T extends Record<string, unknown>>(
-  layer: TokenLayer<T>,
-): T {
-  return { ...layer.extracted, ...layer.overrides };
+export function resolveLayer<T extends object>(layer: TokenLayer<T>): T {
+  return { ...layer.extracted, ...layer.overrides } as T;
 }
 
 /** Merge a persisted record into a flat, renderable {@link TokenSet}. */

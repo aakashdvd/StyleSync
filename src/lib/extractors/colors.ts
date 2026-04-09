@@ -269,7 +269,7 @@ function buildResult(
 ): ExtractedColors {
   const colors: ColorTokens = Object.fromEntries(
     Object.entries(rgbs).map(([k, v]) => [k, rgbToHex(v)]),
-  ) as ColorTokens;
+  ) as unknown as ColorTokens;
 
   const palette: string[] = [];
   const seen = new Set<string>();

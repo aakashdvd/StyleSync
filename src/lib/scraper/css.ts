@@ -1,4 +1,4 @@
-import postcss, { type Declaration, type Rule } from "postcss";
+import { type Declaration, type Rule } from "postcss";
 import safeParser from "postcss-safe-parser";
 import { safeFetch, ScrapeError } from "./fetch";
 
@@ -21,7 +21,7 @@ export function parseCss(source: string): CssDeclaration[] {
   const declarations: CssDeclaration[] = [];
   let root;
   try {
-    root = postcss.parse(source, { parser: safeParser });
+    root = safeParser(source);
   } catch {
     return [];
   }
@@ -54,7 +54,7 @@ export function extractFontFaces(source: string): string[] {
   if (!source) return [];
   let root;
   try {
-    root = postcss.parse(source, { parser: safeParser });
+    root = safeParser(source);
   } catch {
     return [];
   }
