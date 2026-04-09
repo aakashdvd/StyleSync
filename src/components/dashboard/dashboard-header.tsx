@@ -7,6 +7,7 @@ import { useTokenStore } from "@/store/tokens";
 import { SiteMark } from "@/components/landing/site-mark";
 import { Badge } from "@/components/ui/badge";
 import { hostnameOf, timeAgo } from "@/lib/utils";
+import { RescrapeButton } from "./rescrape-button";
 
 export function DashboardHeader() {
   const site = useTokenStore((s) => s.site);
@@ -87,6 +88,7 @@ export function DashboardHeader() {
         <div className="hidden md:block">
           Scraped {timeAgo(site.scrapedAt)}
         </div>
+        <RescrapeButton />
       </div>
     </header>
   );
