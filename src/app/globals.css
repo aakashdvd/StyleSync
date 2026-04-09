@@ -1,0 +1,153 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * App shell tokens — deliberately scoped under --app-* so they can NEVER
+ * collide with the extracted brand tokens (--color-primary, --font-heading,
+ * etc.) that the preview grid consumes. The dashboard chrome always looks
+ * the same; only the preview reflects the scraped website.
+ */
+:root {
+  --app-bg: 240 18% 98%;
+  --app-surface: 0 0% 100%;
+  --app-surface-raised: 0 0% 100%;
+  --app-foreground: 224 35% 12%;
+  --app-muted: 240 20% 96%;
+  --app-muted-foreground: 220 12% 46%;
+  --app-border: 220 18% 90%;
+  --app-ring: 252 82% 62%;
+  --app-accent: 252 82% 62%;
+  --app-accent-foreground: 0 0% 100%;
+  --app-danger: 0 72% 54%;
+  --app-success: 158 64% 42%;
+  --app-warning: 32 95% 52%;
+  --app-radius: 12px;
+
+  --font-app-sans: "Inter", system-ui, -apple-system, Segoe UI, sans-serif;
+  --font-app-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+.dark {
+  --app-bg: 225 30% 7%;
+  --app-surface: 225 25% 10%;
+  --app-surface-raised: 225 20% 13%;
+  --app-foreground: 220 20% 95%;
+  --app-muted: 225 18% 15%;
+  --app-muted-foreground: 220 12% 62%;
+  --app-border: 225 15% 20%;
+  --app-ring: 252 82% 68%;
+  --app-accent: 252 82% 68%;
+  --app-accent-foreground: 225 30% 7%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "ss01", "cv11";
+  }
+  ::selection {
+    background: hsl(var(--app-accent) / 0.3);
+  }
+}
+
+/*
+ * `.preview-scope` marks the root of a region that should render with the
+ * extracted token set rather than the app chrome. Every preview component
+ * reads from `--color-*`, `--font-*`, `--spacing-*` — those variables only
+ * exist inside a scope, so misuse outside the preview fails loudly.
+ */
+.preview-scope {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height);
+  font-weight: var(--body-weight);
+}
+
+.preview-scope h1,
+.preview-scope h2,
+.preview-scope h3,
+.preview-scope h4,
+.preview-scope h5,
+.preview-scope h6 {
+  font-family: var(--font-heading);
+  font-weight: var(--heading-weight);
+  letter-spacing: var(--heading-tracking);
+  line-height: 1.15;
+}
+
+/* Shimmer skeleton used for scrape-in-progress states. */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--app-muted)) 0%,
+    hsl(var(--app-muted) / 0.4) 50%,
+    hsl(var(--app-muted)) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+  border-radius: calc(var(--app-radius) - 4px);
+}
+
+/* Scrollbar tune-down — dashboard feels dense without this. */
+.thin-scroll::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.thin-scroll::-webkit-scrollbar-thumb {
+  background: hsl(var(--app-border));
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.thin-scroll::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--app-muted-foreground) / 0.5);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
+
+/* Grid tile background used behind the preview canvas. */
+.grid-bg {
+  background-image:
+    linear-gradient(to right, hsl(var(--app-border) / 0.5) 1px, transparent 1px),
+    linear-gradient(to bottom, hsl(var(--app-border) / 0.5) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Lock glow — applied to a token card when the user locks it. */
+.lock-glow {
+  box-shadow:
+    0 0 0 1px hsl(var(--app-accent) / 0.6),
+    0 0 24px -4px hsl(var(--app-accent) / 0.35),
+    0 0 48px -12px hsl(var(--app-accent) / 0.25);
+  animation: pulse-ring 1.4s cubic-bezier(0.4, 0, 0.6, 1) 1;
+}
+
+/* DOM-tree scanline visualization used during scraping. */
+.dom-scanner {
+  position: relative;
+  overflow: hidden;
+}
+.dom-scanner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    hsl(var(--app-accent) / 0.12) 48%,
+    hsl(var(--app-accent) / 0.5) 50%,
+    hsl(var(--app-accent) / 0.12) 52%,
+    transparent 100%
+  );
+  animation: dom-scan 2.4s ease-in-out infinite;
+}
