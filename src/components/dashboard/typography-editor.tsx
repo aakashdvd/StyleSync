@@ -3,6 +3,7 @@
 import { useTokenStore } from "@/store/tokens";
 import { Slider } from "@/components/ui/slider";
 import { LockToggle } from "./lock-toggle";
+import { ResetButton } from "./reset-button";
 import { cn } from "@/lib/utils";
 import type { TypographyTokens } from "@/lib/tokens/types";
 
@@ -35,6 +36,12 @@ export function TypographyEditor() {
 
   return (
     <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">
+          Font & scale
+        </div>
+        <ResetButton category="typography" />
+      </div>
       <FontRow
         label="Heading font"
         path="typography.headingFont"

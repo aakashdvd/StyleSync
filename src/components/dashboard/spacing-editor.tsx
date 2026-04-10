@@ -9,6 +9,7 @@ import {
 } from "react";
 import { useTokenStore } from "@/store/tokens";
 import { LockToggle } from "./lock-toggle";
+import { ResetButton } from "./reset-button";
 import { Slider } from "@/components/ui/slider";
 import { cn, clamp } from "@/lib/utils";
 
@@ -36,6 +37,12 @@ export function SpacingEditor() {
 
   return (
     <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">
+          Rhythm & radius
+        </div>
+        <ResetButton category="spacing" />
+      </div>
       <SpacingUnitVisualizer
         unit={spacing.unit}
         onChange={(value) => set("unit", value)}
