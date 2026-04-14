@@ -1,0 +1,10 @@
+.next
+node_modules
+dist
+build
+coverage
+out
+prisma/migrations
+package-lock.json
+*.min.js
+*.min.css
