@@ -1,0 +1,42 @@
+name: Bug report
+description: Report a reproducible problem with StyleSync
+labels: [bug, needs-triage]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear description of the bug, including the URL you tried to scrape if relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Paste URL ...
+        2. Click ...
+        3. See error
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser & version
+      placeholder: Chrome 126, Firefox 127, Safari 17 ...
+  - type: input
+    id: node
+    attributes:
+      label: Node version (if running locally)
+      placeholder: node --version
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs / screenshots
+      render: shell
